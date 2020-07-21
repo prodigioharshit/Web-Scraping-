@@ -2,35 +2,20 @@ import requests
 from bs4 import BeautifulSoup
 from time import sleep
 from random import choice
+from csv import DictReader
 
 base_url = "http://quotes.toscrape.com"
 
-def scrap_quotes():
-    all_quotes = []
-    url = "/page/1"
-    while url:
-        response = requests.get(f"{base_url}{url}")
-        # print(f"Scraping {base_url}{url}....")
-        soup = BeautifulSoup(response.text,"html.parser")
-        quotes = soup.find_all(class_="quote")
-
-        for quote in quotes:
-            all_quotes.append({
-            "text" : quote.find(class_="text").get_text(),
-            "author" : quote.find(class_="author").get_text(),
-            "bio-link" : quote.find("a")["href"]
-            }) 
-        next_btn = soup.find(class_="next")
-        url = next_btn.find("a")["href"] if next_btn else None
-        # sleep(2)
-    return all_quotes
+def read_quotes(filename):
+    with open(filename,"r",encoding="utf8") as file:
+        csv_reader = DictReader(file)
+        return list(csv_reader)
 
 def start_game(quotes):
     quote = choice(quotes)
     remaining_guesses = 4
     print("Here's a quote... ")
     print(quote["text"])
-    print(quote['author'])
     guess = ''    
     while guess.lower() != quote["author"].lower():
         guess = input(f"Who said this? Guesses remaing: {remaining_guesses} ")
@@ -61,5 +46,5 @@ def start_game(quotes):
     else:
         print("Ok!GoodBye...")
 
-quotes = scrap_quotes()
+quotes = read_quotes("quotes.csv")
 start_game(quotes)
