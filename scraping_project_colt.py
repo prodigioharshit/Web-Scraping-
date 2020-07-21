@@ -10,6 +10,7 @@ def read_quotes(filename):
     with open(filename,"r",encoding="utf8") as file:
         csv_reader = DictReader(file)
         return list(csv_reader)
+        
 
 def start_game(quotes):
     quote = choice(quotes)
